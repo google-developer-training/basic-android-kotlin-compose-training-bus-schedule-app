@@ -16,19 +16,9 @@
 
 package com.example.busschedule
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import com.example.busschedule.ui.BusScheduleApp
-import com.example.busschedule.ui.theme.BusScheduleTheme
+import android.app.Application
+import com.example.busschedule.data.AppDatabase
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            BusScheduleTheme {
-                BusScheduleApp()
-            }
-        }
-    }
+class BusScheduleApplication: Application() {
+    val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
 }
