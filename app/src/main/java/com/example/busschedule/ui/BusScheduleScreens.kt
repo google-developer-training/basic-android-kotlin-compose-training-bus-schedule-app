@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -90,12 +94,12 @@ fun BusScheduleApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            modifier = Modifier.padding(innerPadding),
             startDestination = BusScheduleScreens.FullSchedule.name
         ) {
             composable(BusScheduleScreens.FullSchedule.name) {
                 FullScheduleScreen(
                     busSchedules = fullSchedule,
+                    contentPadding = innerPadding,
                     onScheduleClick = { busStopName ->
                         navController.navigate(
                             "${BusScheduleScreens.RouteSchedule.name}/$busStopName"
@@ -115,6 +119,7 @@ fun BusScheduleApp(
                 RouteScheduleScreen(
                     stopName = stopName,
                     busSchedules = routeSchedule,
+                    contentPadding = innerPadding,
                     onBack = { onBackHandler() }
                 )
             }
@@ -127,10 +132,12 @@ fun FullScheduleScreen(
     busSchedules: List<BusSchedule>,
     onScheduleClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     BusScheduleScreen(
         busSchedules = busSchedules,
         onScheduleClick = onScheduleClick,
+        contentPadding = contentPadding,
         modifier = modifier
     )
 }
@@ -140,12 +147,14 @@ fun RouteScheduleScreen(
     stopName: String,
     busSchedules: List<BusSchedule>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onBack: () -> Unit = {}
 ) {
     BackHandler { onBack() }
     BusScheduleScreen(
         busSchedules = busSchedules,
         modifier = modifier,
+        contentPadding = contentPadding,
         stopName = stopName
     )
 }
@@ -154,6 +163,7 @@ fun RouteScheduleScreen(
 fun BusScheduleScreen(
     busSchedules: List<BusSchedule>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     stopName: String? = null,
     onScheduleClick: ((String) -> Unit)? = null,
 ) {
@@ -162,12 +172,23 @@ fun BusScheduleScreen(
     } else {
         "$stopName ${stringResource(R.string.route_stop_name)}"
     }
-
-    Column(modifier) {
+    val layoutDirection = LocalLayoutDirection.current
+    Column(
+        modifier = modifier.padding(
+            start = contentPadding.calculateStartPadding(layoutDirection),
+            end = contentPadding.calculateEndPadding(layoutDirection),
+        )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.padding_medium)),
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding(),
+                    start = dimensionResource(R.dimen.padding_medium),
+                    end = dimensionResource(R.dimen.padding_medium),
+                )
+            ,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(stopNameText)
@@ -175,6 +196,11 @@ fun BusScheduleScreen(
         }
         Divider()
         BusScheduleDetails(
+            contentPadding = PaddingValues(
+                start = contentPadding.calculateStartPadding(layoutDirection),
+                end = contentPadding.calculateEndPadding(layoutDirection),
+                bottom = contentPadding.calculateBottomPadding()
+            ),
             busSchedules = busSchedules,
             onScheduleClick = onScheduleClick
         )
@@ -191,9 +217,13 @@ fun BusScheduleScreen(
 fun BusScheduleDetails(
     busSchedules: List<BusSchedule>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onScheduleClick: ((String) -> Unit)? = null
 ) {
-    LazyColumn(modifier = modifier, contentPadding = PaddingValues(vertical = 8.dp)) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding,
+    ) {
         items(
             items = busSchedules,
             key = { busSchedule -> busSchedule.id }
@@ -244,6 +274,7 @@ fun BusScheduleDetails(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusScheduleTopAppBar(
     title: String,
