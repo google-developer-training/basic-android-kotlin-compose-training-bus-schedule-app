@@ -23,7 +23,7 @@ import com.example.busschedule.data.BusSchedule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class BusScheduleViewModel(): ViewModel() {
+class BusScheduleViewModel: ViewModel() {
 
     // Get example bus schedule
     fun getFullSchedule(): Flow<List<BusSchedule>> = flowOf(
