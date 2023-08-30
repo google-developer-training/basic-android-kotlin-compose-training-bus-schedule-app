@@ -184,7 +184,7 @@ fun BusScheduleScreen(
                 .fillMaxWidth()
                 .padding(
                     top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding(),
+                    bottom = dimensionResource(R.dimen.padding_medium),
                     start = dimensionResource(R.dimen.padding_medium),
                     end = dimensionResource(R.dimen.padding_medium),
                 )
@@ -197,8 +197,6 @@ fun BusScheduleScreen(
         Divider()
         BusScheduleDetails(
             contentPadding = PaddingValues(
-                start = contentPadding.calculateStartPadding(layoutDirection),
-                end = contentPadding.calculateEndPadding(layoutDirection),
                 bottom = contentPadding.calculateBottomPadding()
             ),
             busSchedules = busSchedules,
@@ -234,10 +232,7 @@ fun BusScheduleDetails(
                     .clickable(enabled = onScheduleClick != null) {
                         onScheduleClick?.invoke(schedule.stopName)
                     }
-                    .padding(
-                        vertical = dimensionResource(R.dimen.padding_medium),
-                        horizontal = dimensionResource(R.dimen.padding_medium)
-                    ),
+                    .padding(dimensionResource(R.dimen.padding_medium)),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (onScheduleClick == null) {
