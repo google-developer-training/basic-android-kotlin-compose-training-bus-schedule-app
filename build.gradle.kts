@@ -16,7 +16,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     extra.apply {
-        set("nav_version", "2.8.4")
+        set("nav_version", "2.8.5")
     }
 }
 plugins {
